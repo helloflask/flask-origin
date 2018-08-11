@@ -5,9 +5,7 @@
      
     Flask 0.1版本源码注解。
 
-    :author: Grey Li (李辉)
-    :url: http://greyli.com
-    :copyright: (c) 2018 Grey Li <withlihui@gmail.com>
+    :copyright: (c) 2018 Grey Li
     :license: MIT, see LICENSE for more details.
 """
 from __future__ import with_statement
