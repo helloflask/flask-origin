@@ -4,7 +4,7 @@ Flask 0.1版本源码注解。
 
 *注解：这里的“注解” = 源码本身包含的注释、文档字符串的翻译与简化 + 添加更多必要的注释 + 添加更多有助于理解的额外提示*
 
-## 基本知识
+## 阅读前
 
 为了更容易理解Flask的实现原理，你需要对WSGI协议以及HTTP协议有一些了解，建议先简单浏览下面的基本知识：
 
@@ -12,7 +12,7 @@ Flask 0.1版本源码注解。
 [PEP 3333](https://www.python.org/dev/peps/pep-3333/)（WSGI实现）
 * [HTTP概述](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Overview)
 
-## 进阶知识
+## 阅读后
 
 Flask内部实现大量依赖于Werkzeug，包括请求和响应对象，路由匹配，URL生成等等，你可以阅读Werkzeug的文档来深入了解这些内容的具体实现：
 
@@ -20,7 +20,7 @@ Flask内部实现大量依赖于Werkzeug，包括请求和响应对象，路由�
 
 *注意：新版本的Werkzeug已经发生很大的变化，对应的Werkzeug源码版本为[0.6.1](https://github.com/pallets/werkzeug/tree/0.6.1)。上述文档链接为0.14版本，请谨慎参考。*
 
-## 推荐阅读
+## 下一步
 
 本项目属于[《Flask Web开发实战》](http://helloflask.com/book)的附属项目。在本书第16章的前半部分，为了让读者快速对Flask的源码结构建立一个初步的认识以便阅读后面的内容，推荐读者阅读0.1版本的源码。本项目对该版本的源码中的注释和文档字符串进行了翻译，并在必要的地方添加了一些额外的注解，以便于阅读和理解。
 
@@ -56,7 +56,7 @@ $ cd flask-origin
 $ git checkout mini
 ```
 
-## 注意事项
+## 注意
 
 0.1版本源码中的部分API在最新版本已经发生了变化，请勿将源码中的API用于实际开发。
 
