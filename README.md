@@ -1,8 +1,27 @@
 # Flask-Origin
 
-Flask 0.1版本源码注解。
+Flask 0.1版本源码注解*。
 
 *注解：这里的“注解” = 源码本身包含的注释、文档字符串的翻译与简化 + 添加更多必要的注释 + 添加更多有助于理解的额外提示*
+
+## 源码版本
+
+为了方便不同的阅读需求，源码设置了下面几个标签：
+
+* mini：去除所有注释和文档字符串
+* origin：原版
+* translated：翻译所有注释和文档字符串
+* annotated：添加注解
+
+你可以使用下面的方式签出某个版本，以mini为例：
+
+```
+$ git clone https://github.com/greyli/flask-origin
+$ cd flask-origin
+$ git checkout mini
+```
+
+**注意：0.1版本源码中的部分API在最新版本已经发生了变化，请勿将源码中的API用于实际开发。**
 
 ## 阅读前
 
@@ -38,27 +57,6 @@ Flask内部实现大量依赖于Werkzeug，包括请求和响应对象，路由�
   * session
   * 蓝本
   * 模板渲染
-
-## 代码版本
-
-为了方便不同的阅读需求，源码添加了下面几个标签：
-
-* mini：去除所有注释和文档字符串
-* origin：原版
-* translated：翻译所有注释和文档字符串
-* annotated：添加注解
-
-你可以使用下面的方式签出某个版本，以mini为例：
-
-```
-$ git clone https://github.com/greyli/flask-origin
-$ cd flask-origin
-$ git checkout mini
-```
-
-## 注意
-
-0.1版本源码中的部分API在最新版本已经发生了变化，请勿将源码中的API用于实际开发。
 
 ## License
 
