@@ -12,25 +12,19 @@ Flask 0.1版本源码注解。
 [PEP 3333](https://www.python.org/dev/peps/pep-3333/)（WSGI实现）
 * [HTTP概述](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Overview)
 
-## 进阶阅读
+## 进阶知识
 
-Flask内部实现大量依赖于Werkzeug，包括请求和响应对象，路由匹配，URL生成等等，你可以阅读Werkzeug的
-文档来深入了解这些内容的具体实现：
+Flask内部实现大量依赖于Werkzeug，包括请求和响应对象，路由匹配，URL生成等等，你可以阅读Werkzeug的文档来深入了解这些内容的具体实现：
 
 * [Werkzeug文档](http://werkzeug.pocoo.org/docs/)
 
-*注意：新版本的Werkzeug已经发生很大的变化，对应的Werkzeug源码
-版本为[0.6.1](https://github.com/pallets/werkzeug/tree/0.6.1)。上述文档链接为0.14版本，请谨慎参考。*
+*注意：新版本的Werkzeug已经发生很大的变化，对应的Werkzeug源码版本为[0.6.1](https://github.com/pallets/werkzeug/tree/0.6.1)。上述文档链接为0.14版本，请谨慎参考。*
 
 ## 推荐阅读
 
-本项目属于[《Flask Web开发实战》](http://helloflask.com/book)的附属项目。在本书第16章的前半部分，
-为了让读者快速对Flask的源码结构建立一个初步的认识以便阅读后面的内容，推荐读者阅读0.1版本的源码。
-本项目对该版本的源码中的注释和文档字符串进行了翻译，并在必要的地方添加了一些额外的注解，以便于阅读和理解。
+本项目属于[《Flask Web开发实战》](http://helloflask.com/book)的附属项目。在本书第16章的前半部分，为了让读者快速对Flask的源码结构建立一个初步的认识以便阅读后面的内容，推荐读者阅读0.1版本的源码。本项目对该版本的源码中的注释和文档字符串进行了翻译，并在必要的地方添加了一些额外的注解，以便于阅读和理解。
 
-不过，由于篇幅所限，部分概念（比如本地上下文相关的本地线程、本地堆栈、本地代理）并没有深入介绍。而且，
-相对于通过代码编写的顺序从上往下阅读，通过调用逻辑来阅读可以更容易理解Flask的工作方式。为此，你可以
-考虑阅读[《Flask Web开发实战》](http://helloflask.com/book)第16章，它主要包含下面这些内容：
+不过，由于篇幅所限，部分概念（比如本地上下文相关的本地线程、本地堆栈、本地代理）并没有深入介绍。而且，相对于通过代码编写的顺序从上往下阅读，通过调用逻辑来阅读可以更容易理解Flask的工作方式。为此，你可以考虑阅读[《Flask Web开发实战》](http://helloflask.com/book)第16章，它主要包含下面这些内容：
 
 * 源码阅读方法
 * WSGI实现介绍
