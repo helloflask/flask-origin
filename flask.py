@@ -75,7 +75,7 @@ class _RequestContext(object):
         self.url_adapter = app.url_map.bind_to_environ(environ)  # 绑定了当前环境信息，用于构建URL，在url_for函数中使用
         self.request = app.request_class(environ)  # 创建请求对象，包含请求信息
         self.session = app.open_session(self.request)  # 创建session对象，用于存储用户会话数据到cookie中
-        self.g = _RequestGlobals()
+        self.g = _RequestGlobals()  # 创建g对象，用于在当前请求存储全局变量
         self.flashes = None  # 存储当前请求的通过flash函数发送的消息
 
     def __enter__(self):
@@ -484,7 +484,7 @@ class Flask(object):
         """
         try:
             endpoint, values = self.match_request()
-            return self.view_functions[endpoint](**values)
+            return self.view_functions[endpoint](**values)  # 根据端点在view_functions字典内获取对应的视图函数并调用，传入视图参数
         except HTTPException, e:
             handler = self.error_handlers.get(e.code)
             if handler is None:
