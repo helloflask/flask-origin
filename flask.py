@@ -45,8 +45,8 @@ class Request(RequestBase):
 
     def __init__(self, environ):
         RequestBase.__init__(self, environ)
-        self.endpoint = None
-        self.view_args = None
+        self.endpoint = None  # 当前请求的端点
+        self.view_args = None  # 当前请求的视图参数，会作为关键字参数传入视图函数
 
 
 class Response(ResponseBase):
@@ -68,17 +68,18 @@ class _RequestContext(object):
     然后被推送到_request_ctx_stack，在请求结束时会被相应的移除。它会为提供的
     WSGI环境创建URL适配器（adapter）和请求对象。
     """
-
+    # 会在flask.Flask.request_context和flask.Flask.test_requset_context方法中
+    # 调用，以便生成请求上下文。
     def __init__(self, app, environ):
         self.app = app
-        self.url_adapter = app.url_map.bind_to_environ(environ)
-        self.request = app.request_class(environ)
-        self.session = app.open_session(self.request)
+        self.url_adapter = app.url_map.bind_to_environ(environ)  # 绑定了当前环境信息，用于构建URL，在url_for函数中使用
+        self.request = app.request_class(environ)  # 创建请求对象，包含请求信息
+        self.session = app.open_session(self.request)  # 创建session对象，用于存储用户会话数据到cookie中
         self.g = _RequestGlobals()
-        self.flashes = None
+        self.flashes = None  # 存储当前请求的通过flash函数发送的消息
 
     def __enter__(self):
-        _request_ctx_stack.push(self)
+        _request_ctx_stack.push(self)  # 将当前请求上下文对象推送到_request_ctx_stack堆栈，这个堆栈在最后定义
 
     def __exit__(self, exc_type, exc_value, tb):
         # 在调试模式（debug mode）而且有异常发生时，不要移除（pop）请求堆栈。
@@ -93,7 +94,7 @@ def url_for(endpoint, **values):
     :param endpoint: URL的端点值（函数名）。
     :param values: URL规则的变量参数。
     """
-    return _request_ctx_stack.top.url_adapter.build(endpoint, values)
+    return _request_ctx_stack.top.url_adapter.build(endpoint, values)  # 这里堆栈的栈顶（top）即上面的请求上下文对象实例
 
 
 def flash(message):
@@ -138,6 +139,7 @@ def render_template_string(source, **context):
 
 def _default_template_ctx_processor():
     """默认的模板上下文处理器（processor）。注入request、session和g。"""
+    # 把request、session和g注入到模板上下文，以便可以直接在模板中使用这些变量。
     reqctx = _request_ctx_stack.top
     return dict(
         request=reqctx.request,
@@ -182,16 +184,16 @@ class Flask(object):
     #: 相应的URL规则，而且开发服务器将不再提供（serve）任何静态文件。
     static_path = '/static'
 
-    #: 如果设置了密钥（secret key），加密组件（即itsdangerous）可以使用它来为
+    #: 如果设置了密钥（secret key），加密组件可以使用它来为
     #: cookies或其他东西签名。比如，当你想使用安全的cookie时，把它设为一个复杂的随机值。
     secret_key = None
 
     #: 安全cookie使用这个值作为session cookie的名称。
-    session_cookie_name = 'session'
+    session_cookie_name = 'session'  # 存储session对象数据的cookie名称
 
     #: 直接传入Jinja2环境的选项。
     jinja_options = dict(
-        autoescape=True,
+        autoescape=True,  # 默认开启自动转义，即转义不安全字符为HTML实体，比如“>”、“<”等。
         extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_']
     )
 
@@ -206,6 +208,10 @@ class Flask(object):
 
         #: 定位程序的根目录。
         self.root_path = _get_package_path(self.package_name)
+
+        ###################################
+        # 下面是几个存储回调函数的字典或列表
+        ###################################
 
         #: 一个储存所有已注册的视图函数的字典。字典的键将是函数的名称，这些名称
         #: 也被用来生成URL；字典的值是函数对象本身。
@@ -230,7 +236,7 @@ class Flask(object):
         #: 一个将被无参数调用以生成模板上下文的的函数列表。每一个函数应返回一个
         #: 用于更新模板上下文的字典。
         #: 要注册一个函数到这里，使用context_processor装饰器。
-        self.template_context_processors = [_default_template_ctx_processor]
+        self.template_context_processors = [_default_template_ctx_processor]  # 默认的处理器用来注入session、request和g
 
         self.url_map = Map()
 
@@ -241,15 +247,15 @@ class Flask(object):
                 target = (self.package_name, 'static')
             else:
                 target = os.path.join(self.root_path, 'static')
-            self.wsgi_app = SharedDataMiddleware(self.wsgi_app, {
-                self.static_path: target
+            self.wsgi_app = SharedDataMiddleware(self.wsgi_app, {  # SharedDataMiddleware中间件用来为程序添加处理静态文件的能力
+                self.static_path: target  # URL路径和实际文件目录（static文件夹）的映射
             })
 
         #: Jinja2环境。它通过jinja_options创建，加载器（loader）通过
         #: create_jinja_loader函数返回。
         self.jinja_env = Environment(loader=self.create_jinja_loader(),
                                      **self.jinja_options)
-        self.jinja_env.globals.update(
+        self.jinja_env.globals.update(  # 将url_for和get_flashed_messages函数作为全局对象注入到模板上下文，以便在模板中调用
             url_for=url_for,
             get_flashed_messages=get_flashed_messages
         )
@@ -268,7 +274,7 @@ class Flask(object):
         :param context: 包含额外添加的变量的字典，用来更新上下文。
         """
         reqctx = _request_ctx_stack.top
-        for func in self.template_context_processors:
+        for func in self.template_context_processors:  # 调用所有使用context_processor装饰器注册的模板上下文处理函数，更新模板上下文
             context.update(func())
 
     def run(self, host='localhost', port=5000, **options):
@@ -283,8 +289,8 @@ class Flask(object):
         from werkzeug import run_simple
         if 'debug' in options:
             self.debug = options.pop('debug')
-        options.setdefault('use_reloader', self.debug)
-        options.setdefault('use_debugger', self.debug)
+        options.setdefault('use_reloader', self.debug)  # 如果debug为True，开启重载器（reloader）
+        options.setdefault('use_debugger', self.debug)  # 如果debug为True，开启调试器（debugger）
         return run_simple(host, port, self, **options)
 
     def test_client(self):
@@ -358,8 +364,12 @@ class Flask(object):
         :param options: 转发给底层的werkzeug.routing.Rule对象的选项。
         """
         options['endpoint'] = endpoint
-        options.setdefault('methods', ('GET',))
+        options.setdefault('methods', ('GET',))  #  默认监听GET方法
         self.url_map.add(Rule(rule, **options))
+
+    ################################################################################
+    # 下面是几个用于注册各类回调函数的装饰器，函数对象存储到上面创建的几个字典和列表属性中  
+    ################################################################################
 
     def route(self, rule, **options):
         """一个用于为给定的URL规则注册视图函数的装饰器。示例：
@@ -417,7 +427,7 @@ class Flask(object):
         """
         def decorator(f):
             self.add_url_rule(rule, f.__name__, **options)
-            self.view_functions[f.__name__] = f
+            self.view_functions[f.__name__] = f  # 将端点（默认使用函数名，即f.__name__）和函数对象的映射存储到view_functions字典
             return f
         return decorator
 
@@ -437,7 +447,7 @@ class Flask(object):
         :param code: 对应处理器的整型类型的错误代码。
         """
         def decorator(f):
-            self.error_handlers[code] = f
+            self.error_handlers[code] = f  # 将错误码和函数对象的映射存储到error_handlers字典
             return f
         return decorator
 
@@ -455,6 +465,10 @@ class Flask(object):
         """注册一个模板上下文处理函数。"""
         self.template_context_processors.append(f)
         return f
+    
+    #################################
+    # 下面的几个方法用于处理请求和响应
+    #################################
 
     def match_request(self):
         """基于URL映射（map）匹配当前请求。如果匹配成功，同时也存储端点和
@@ -465,9 +479,8 @@ class Flask(object):
         return rv
 
     def dispatch_request(self):
-        """附注请求分发工作。匹配URL，返回视图函数或错误器的返回值。这个返回值
-        不一定得是响应对象。为了将返回值返回值转换成合适的想要对象，
-        调用make_response。
+        """附注请求分发工作。匹配URL，返回视图函数或错误处理器的返回值。这个返回值
+        不一定得是响应对象。为了将返回值返回值转换成合适的想要对象，调用make_response。
         """
         try:
             endpoint, values = self.match_request()
@@ -530,6 +543,10 @@ class Flask(object):
             response = handler(response)
         return response
 
+    #########################################################################
+    # WSGI规定的可调用对象，从请求进入，到生成响应并返回的整个处理流程都发生在这里
+    #########################################################################
+
     def wsgi_app(self, environ, start_response):
         """实际的WSGI程序。它没有通过__call__实现，因此可以附加中间件：
         
@@ -539,12 +556,13 @@ class Flask(object):
         :param start_response: 一个接受状态码的可调用对象，一个包含首部
                                的列表以及一个可选的用于启动响应的异常上下文。
         """
+        # 在with语句下执行相关操作，会触发_RequestContext中的__enter__方法，从而推送请求上下文到堆栈中
         with self.request_context(environ):
-            rv = self.preprocess_request()
+            rv = self.preprocess_request()  # 预处理请求，调用所有使用了before_request钩子的函数
             if rv is None:
-                rv = self.dispatch_request()
-            response = self.make_response(rv)
-            response = self.process_response(response)
+                rv = self.dispatch_request()  # 请求分发，获得视图函数返回值（或是错误处理器的返回值）
+            response = self.make_response(rv)  # 生成响应，把上面的返回值转换成响应对象
+            response = self.process_response(response)  # 响应处理，调用所有使用了after_request钩子的函数
             return response(environ, start_response)
 
     def request_context(self, environ):
@@ -572,6 +590,15 @@ class Flask(object):
 
 
 # 本地上下文
+
+# 请求上下文堆栈（_request_ctx_stack）栈顶（_request_ctx_stack.top）的对象即请求上下文对象（_RequestContext）实例
+# 通过这里的调用可以获取当前请求上下文中保存的request、session等对象
+# 请求上下文在wsgi_app方法中通过with语句调用request_context方法创建并推入堆栈
+
+# 本地上下文相关的本地线程、本地堆栈和本地代理的实现这里不再展开，你需要先了解堆栈和代码在Python中的实现，
+# 然后再通过阅读Werkzeug的文档或源码了解具体实现
+# 另外，你也可以阅读《Flask Web开发实战》（helloflask.com/book）第16章16.4.3小节，这一小节首先介绍了本地线程和Werkzeug中实现的Local，
+# 然后从堆栈和代理在Python中的基本实现开始，逐渐过渡到本地堆栈和本地代理的实现
 _request_ctx_stack = LocalStack()
 current_app = LocalProxy(lambda: _request_ctx_stack.top.app)
 request = LocalProxy(lambda: _request_ctx_stack.top.request)
