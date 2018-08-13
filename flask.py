@@ -12,13 +12,11 @@ from __future__ import with_statement
 import os
 import sys
 
-from threading import local
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 from werkzeug import Request as RequestBase, Response as ResponseBase, \
-     LocalStack, LocalProxy, create_environ, cached_property, \
-     SharedDataMiddleware
+     LocalStack, LocalProxy, create_environ, SharedDataMiddleware
 from werkzeug.routing import Map, Rule
-from werkzeug.exceptions import HTTPException, InternalServerError
+from werkzeug.exceptions import HTTPException
 from werkzeug.contrib.securecookie import SecureCookie
 
 # 这些从Werkzeug和Jinja2导入的辅助函数（utilities）没有在
