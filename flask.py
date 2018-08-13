@@ -52,7 +52,7 @@ class Response(ResponseBase):
     完全相同。通常情况下，你不需要自己创建这个对象，因为flask.Flask.make_response
     会负责这个工作。
 
-    如果你想替换这个响应对象，你可以子类化这个类，然后将你的子类赋值给flask.Flask.request_class。
+    如果你想替换这个响应对象，你可以子类化这个类，然后将你的子类赋值给flask.Flask.response_class。
     """
     default_mimetype = 'text/html'
 
@@ -88,6 +88,8 @@ class _RequestContext(object):
 
 def url_for(endpoint, **values):
     """根据给定的端点和提供的方法生成一个URL。
+
+    对于目标端点未知的变量参数，将会作为查询参数附加在URL后面（生成查询字符串）。
 
     :param endpoint: URL的端点值（函数名）。
     :param values: URL规则的变量参数。
@@ -172,7 +174,7 @@ class Flask(object):
     
     """
 
-    #: 用作请求对象的类。更多信息参见flask.request。
+    #: 用作请求对象的类。更多信息参见flask.Request。
     request_class = Request
 
     #: 用作响应对象的类。更多信息参见flask.Response。
@@ -304,7 +306,7 @@ class Flask(object):
             /schemal.sql
             /static
                 /style.css
-            /template
+            /templates
                 /layout.html
                 /index.html
 
@@ -354,7 +356,7 @@ class Flask(object):
 
             def index():
                 pass
-            app.add_url_rule('index', '/')
+            app.add_url_rule('/', 'index')
             app.view_functions['index'] = index
 
         :param rule: 字符串形式的URL规则。
@@ -433,12 +435,12 @@ class Flask(object):
         """一个用于为给定的错误码注册函数的装饰器。示例：
 
             @app.errorhandler(404)
-            def page_not_found():
+            def page_not_found(error):
                 return 'This page does not exist', 404
 
         你也可以不使用errorhandler注册一个函数作为错误处理器。下面的例子同上：
 
-            def page_not_found():
+            def page_not_found(error):
                 return 'This page does not exist', 404
             app.error_handlers[404] = page_not_found
 
@@ -572,7 +574,7 @@ class Flask(object):
             with app.request_context(environ):
                 do_something_with(request)
 
-        :params environ: 一个WSGI环境。
+        :param environ: 一个WSGI环境。
         """
         return _RequestContext(self, environ)
 
